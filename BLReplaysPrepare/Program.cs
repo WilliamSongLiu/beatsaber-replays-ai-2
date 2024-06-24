@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
@@ -78,11 +79,12 @@ public class Program
                     }
                 }
 
-                SaveNotes(notes, lbFolder + $"\\{score.PlayerId}-{score.Accuracy}-{score.BaseScore}-{njs}.npy");    
+                string filePath = Path.Combine(lbFolder, $"{score.PlayerId}-{score.Accuracy}-{score.BaseScore}-{njs}.npy");
+                SaveNotes(notes, filePath);
             }
 
-            
-        } catch (Exception e) { 
+
+        } catch (Exception e) {
             Console.WriteLine($"Message :{e.Message}");
         }
     }
@@ -93,8 +95,8 @@ public class Program
         string responseBody = await response.Content.ReadAsStringAsync();
 
         var scores = JsonSerializer.Deserialize<LeaderboardResponse>(responseBody, jsonOptions);
-        
-        string lbFolder = $"..\\..\\..\\..\\replays\\{id}";
+
+        string lbFolder = Path.Combine("..", "..", "..", "..", "replays", id);
         Directory.CreateDirectory(lbFolder);
         await Task.WhenAll(scores.Scores.OrderByDescending(s => s.BaseScore).Select(s => DownloadReplay(lbFolder, scores.Difficulty.Njs, s)).ToArray());
     }
@@ -112,9 +114,9 @@ public class Program
                 HttpResponseMessage response = await httpClient.GetAsync(apiUrl + $"/leaderboards?leaderboardContext=nomods&page={page}&count={pageSize}&type=ranked&sortBy=playcount&order=desc&count=12&allTypes=0&allRequirements=0");
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
-            
+
                 var leaderboardsPage = JsonSerializer.Deserialize<ResponseWithMetadata<LeaderboardInfo>>(responseBody, jsonOptions);
-                
+
                 foreach (var leaderboard in leaderboardsPage.Data)
                 {
                     await DownloadLeaderboardScores(leaderboard.Id);
