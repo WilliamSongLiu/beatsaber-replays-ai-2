@@ -96,7 +96,7 @@ public class Program
 
         var scores = JsonSerializer.Deserialize<LeaderboardResponse>(responseBody, jsonOptions);
 
-        string lbFolder = Path.Combine("..", "..", "..", "..", "replays", id);
+        string lbFolder = Path.Combine("..", "replays", id);
         Directory.CreateDirectory(lbFolder);
         await Task.WhenAll(scores.Scores.OrderByDescending(s => s.BaseScore).Select(s => DownloadReplay(lbFolder, scores.Difficulty.Njs, s)).ToArray());
     }
