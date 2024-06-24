@@ -52,7 +52,6 @@ public class Program
         if (score.Offsets == null || score.Replay?.Length < 1) return;
 
         try {
-
             var request = new HttpRequestMessage(HttpMethod.Get, score.Replay);
             request.Headers.Range = new RangeHeaderValue(score.Offsets.Notes, score.Offsets.Walls);
 
@@ -78,8 +77,6 @@ public class Program
                 string filePath = Path.Combine(lbFolder, $"{score.PlayerId}-{score.Accuracy}-{score.BaseScore}-{njs}.npy");
                 SaveNotes(notes, filePath);
             }
-
-
         } catch (Exception e) {
             Console.WriteLine($"Message :{e.Message}");
         }
