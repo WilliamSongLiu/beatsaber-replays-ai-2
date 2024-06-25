@@ -32,6 +32,7 @@ public class Program
     public static double clamp(double num, double min, double max) {
         return Math.Min(Math.Max(num, min), max);
     }
+
     public static void SaveNotes(List<NoteEvent> notes, string filename) {
         if (notes.Count == 0) return;
 
@@ -50,6 +51,12 @@ public class Program
 
     public static async Task DownloadReplay(string lbFolder, float njs, ScoreResponse score) {
         if (score.Offsets == null || score.Replay?.Length < 1) return;
+
+        string filePath = Path.Combine(lbFolder, $"{score.PlayerId}-{score.Accuracy}-{score.BaseScore}-{njs}.npy");
+
+        if (File.Exists(filePath)) {
+            return;
+        }
 
         try {
             var request = new HttpRequestMessage(HttpMethod.Get, score.Replay);
@@ -74,7 +81,6 @@ public class Program
                     }
                 }
 
-                string filePath = Path.Combine(lbFolder, $"{score.PlayerId}-{score.Accuracy}-{score.BaseScore}-{njs}.npy");
                 SaveNotes(notes, filePath);
             }
         } catch (Exception e) {
