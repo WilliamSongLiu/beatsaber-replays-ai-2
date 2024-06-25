@@ -55,6 +55,7 @@ public class Program
         string filePath = Path.Combine(lbFolder, $"{score.PlayerId}-{score.Accuracy}-{score.BaseScore}-{njs}.npy");
 
         if (File.Exists(filePath)) {
+            Console.WriteLine($"Replay {score.PlayerId}-{score.Accuracy}-{score.BaseScore}-{njs} already downloaded");
             return;
         }
 
