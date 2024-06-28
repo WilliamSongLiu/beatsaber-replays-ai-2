@@ -49,13 +49,12 @@ public class Program
         np.save(filename, output);
     }
 
-    public static async Task DownloadReplay(string lbFolder, float njs, ScoreResponse score) {
+    public static async Task DownloadReplay(string lbFolder, ScoreResponse score) {
         if (score.Offsets == null || score.Replay?.Length < 1) return;
 
-        string filePath = Path.Combine(lbFolder, $"{score.PlayerId}-{score.Accuracy}-{score.BaseScore}-{njs}.npy");
+        string filePath = Path.Combine(lbFolder, $"{score.Player.Id}-{score.Player.Name}.npy");
 
         if (File.Exists(filePath)) {
-            Console.WriteLine($"Replay {score.PlayerId}-{score.Accuracy}-{score.BaseScore}-{njs} already downloaded");
             return;
         }
 
@@ -94,11 +93,11 @@ public class Program
         response.EnsureSuccessStatusCode();
         string responseBody = await response.Content.ReadAsStringAsync();
 
-        var scores = JsonSerializer.Deserialize<LeaderboardResponse>(responseBody, jsonOptions);
+        var leaderboard = JsonSerializer.Deserialize<LeaderboardResponse>(responseBody, jsonOptions);
 
-        string lbFolder = Path.Combine("..", "replays", id);
+        string lbFolder = Path.Combine("..", "replays", id + "-" + leaderboard.Difficulty.Njs + "-" + leaderboard.Song.Name);
         Directory.CreateDirectory(lbFolder);
-        await Task.WhenAll(scores.Scores.OrderByDescending(s => s.BaseScore).Select(s => DownloadReplay(lbFolder, scores.Difficulty.Njs, s)).ToArray());
+        await Task.WhenAll(leaderboard.Scores.OrderByDescending(s => s.BaseScore).Select(s => DownloadReplay(lbFolder, s)).ToArray());
     }
 
     public static async Task Main(string[] args)
