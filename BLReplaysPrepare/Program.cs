@@ -35,7 +35,7 @@ public class Program
     }
 
     public static string sanitizeString(string s) {
-        return Regex.Replace(s, "[^a-zA-Z0-9]", "");
+        return Regex.Replace(s, "[^a-zA-Z0-9 ]", "");
     }
 
     public static void SaveNotes(List<NoteEvent> notes, string filename) {
