@@ -5,6 +5,7 @@ using ReplayDecoder;
 using System.Net.Http.Headers;
 using NumSharp;
 using BeatLeader_Server.Utils;
+using System.Text.RegularExpressions;
 
 public class Difficulty {
     public float Njs { get; set; }
@@ -33,6 +34,10 @@ public class Program
         return Math.Min(Math.Max(num, min), max);
     }
 
+    public static string sanitizeString(string s) {
+        return Regex.Replace(s, "[^a-zA-Z0-9]", "");
+    }
+
     public static void SaveNotes(List<NoteEvent> notes, string filename) {
         if (notes.Count == 0) return;
 
@@ -52,7 +57,7 @@ public class Program
     public static async Task DownloadReplay(string lbFolder, ScoreResponse score) {
         if (score.Offsets == null || score.Replay?.Length < 1) return;
 
-        string filePath = Path.Combine(lbFolder, $"{score.Player.Id}-{score.Player.Name}.npy");
+        string filePath = Path.Combine(lbFolder, $"{score.Player.Id}-{sanitizeString(score.Player.Name)}.npy");
 
         if (File.Exists(filePath)) {
             return;
@@ -95,7 +100,7 @@ public class Program
 
         var leaderboard = JsonSerializer.Deserialize<LeaderboardResponse>(responseBody, jsonOptions);
 
-        string lbFolder = Path.Combine("..", "replays", id + "-" + leaderboard.Difficulty.Njs + "-" + leaderboard.Song.Name);
+        string lbFolder = Path.Combine("..", "replays", $"{id}-{leaderboard.Difficulty.Njs}-{sanitizeString(leaderboard.Song.Name)}");
         Directory.CreateDirectory(lbFolder);
         await Task.WhenAll(leaderboard.Scores.OrderByDescending(s => s.BaseScore).Select(s => DownloadReplay(lbFolder, s)).ToArray());
     }
