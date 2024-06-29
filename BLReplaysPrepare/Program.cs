@@ -94,7 +94,7 @@ public class Program
     }
 
     public static async Task DownloadLeaderboardScores(string id) {
-        HttpResponseMessage response = await httpClient.GetAsync($"{apiUrl}/leaderboard/scores/{id}?leaderboardContext=nomods&page=1&sortBy=rank&order=desc");
+        HttpResponseMessage response = await httpClient.GetAsync($"{apiUrl}/leaderboard/scores/{id}?leaderboardContext=nomods&page=1&sortBy=rank&order=desc&count=10");
         response.EnsureSuccessStatusCode();
         string responseBody = await response.Content.ReadAsStringAsync();
 
