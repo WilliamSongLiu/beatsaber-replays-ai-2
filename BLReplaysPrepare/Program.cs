@@ -110,7 +110,6 @@ public class Program
         int leaderboardCount = 0;
         int pageSize = 100;
         int page = 1;
-        int pageLimit = 22;
 
         do {
             try
@@ -127,7 +126,7 @@ public class Program
                     Console.WriteLine($"Leaderboard #{leaderboardCount + 1} of {leaderboardsPage.Metadata.Total}");
                     leaderboardCount++;
                 }
-                if (leaderboardsPage.Data.Count() < pageSize || pageLimit == page) {
+                if (leaderboardsPage.Data.Count() < pageSize) {
                     break;
                 }
                 page++;
