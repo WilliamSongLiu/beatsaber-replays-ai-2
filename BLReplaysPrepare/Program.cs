@@ -39,11 +39,13 @@ public class Program
     }
 
     public static void SaveNotes(List<NoteEvent> notes, string filename) {
-        if (notes.Count == 0) return;
+        List<NoteEvent> notBombNotes = notes.FindAll(note => note.eventType != NoteEventType.bomb);
 
-        NDArray? output = np.zeros(new Shape(notes.Count, 3));
+        if (notBombNotes.Count == 0) return;
+
+        NDArray output = np.zeros(new Shape(notBombNotes.Count, 3));
         int index = 0;
-        foreach (var note in notes)
+        foreach (var note in notBombNotes)
         {
             output[index][0] = note.noteID;
             output[index][1] = note.eventType == NoteEventType.good ? 1 - clamp(note.noteCutInfo.cutDistanceToCenter / 0.3, 0, 1) : 0.0;
